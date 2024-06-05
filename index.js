@@ -2,7 +2,8 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors');
 const config = require('./app/config');
-const userRoutes = require('./app/user/user.route.js')
+const userRoutes = require('./app/modules/user/user.route.js')
+const productRoutes = require('./app/modules/product/product.route.js')
 
 const app = express()
 
@@ -10,6 +11,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api/users', userRoutes)
+app.use('/api/products', productRoutes)
 
 mongoose.set("strictQuery", false);
 mongoose.connect(config.database_url)

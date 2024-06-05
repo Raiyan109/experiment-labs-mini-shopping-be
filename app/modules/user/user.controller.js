@@ -1,7 +1,7 @@
 const User = require('../user/user.model.js')
 const bcrypt = require('bcrypt')
 const { userSchema } = require('./user.validation.js')
-const config = require('../config/index.js')
+const config = require('../../config/index.js')
 
 // signup user
 const signupUser = async (req, res) => {

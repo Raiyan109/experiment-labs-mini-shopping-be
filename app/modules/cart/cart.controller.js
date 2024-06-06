@@ -67,7 +67,7 @@ const addToCart = async (req, res) => {
                     quantity: quantity,
                     price: product.price
                 }],
-                total: product.price * quantity
+                total: parseFloat(product.price * quantity).toFixed(2)
             });
             await newCart.save();
             return res.status(201).send(newCart);

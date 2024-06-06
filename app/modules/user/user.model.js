@@ -18,13 +18,13 @@ const userSchema = new Schema({
     },
     cart: [{
         type: mongoose.Types.ObjectId,
-        // ref: 'Part',
+        ref: 'Product',
         // required: true
     }],
     ratings: {
         type: mongoose.Types.ObjectId,
     }
-})
+}, { timestamps: true })
 
 
 

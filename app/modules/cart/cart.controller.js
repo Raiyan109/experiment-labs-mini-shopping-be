@@ -9,16 +9,18 @@ const addToCart = async (req, res) => {
 
 
     try {
+        console.log("userId:", userId);
+        console.log("productId:", productId);
 
-        // const product = await Product.findOne({ _id: productId })
-        const product = await Product.findById(productId)
+        const cart = await Cart.findOne({ userId });
+        const product = await Product.findOne({ _id: productId })
+        // const product = await Product.findById(productId)
 
         if (!product) {
+            console.log("Product not found:", productId);
             res.status(404).send({ message: "item not found" });
             return;
         }
-
-        const cart = await Cart.findOne({ userId });
 
 
         // If cart already exists for user

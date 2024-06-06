@@ -2,6 +2,8 @@ const User = require('../user/user.model.js')
 const bcrypt = require('bcrypt')
 const { userSchema } = require('./user.validation.js')
 const config = require('../../config/index.js')
+const jwt = require('jsonwebtoken')
+
 
 // signup user
 const signupUser = async (req, res) => {
@@ -44,9 +46,14 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ msg: 'Incorrect Password' })
         }
 
+        const token = jwt.sign({
+            userId: existingUser._id.toString()
+        }, config.jwt_secret, { expiresIn: '7d' })
+
         res.status(200).json({
             message: "Login success",
-            user: existingUser
+            user: existingUser,
+            access_token: token
         })
 
     } catch (error) {

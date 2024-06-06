@@ -7,4 +7,5 @@ module.exports = {
     port: process.env.PORT,
     database_url: process.env.MONGO_URI,
     bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
+    jwt_secret: process.env.JWT_SECRET
 };

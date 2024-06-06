@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 // Get all parts
 const getProducts = async (req, res) => {
     try {
-        const search = req.query.searchTerm
+        const search = req.query.searchTerm || ''
         const query = {
             name: { $regex: search, $options: 'i' }
         }

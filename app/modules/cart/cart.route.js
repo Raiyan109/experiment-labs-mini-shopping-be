@@ -1,6 +1,6 @@
 const express = require('express')
 const { requireSignIn } = require('../../middlewares/authMiddleware.js')
-const { addToCart, getCart } = require('./cart.controller.js')
+const { addToCart, getCart, deleteCart } = require('./cart.controller.js')
 
 const router = express.Router()
 
@@ -9,5 +9,8 @@ const router = express.Router()
 router.post('/addToCart', requireSignIn, addToCart)
 
 router.get('/', requireSignIn, getCart)
+
+// Delete cart
+router.delete('/:id', requireSignIn, deleteCart)
 
 module.exports = router

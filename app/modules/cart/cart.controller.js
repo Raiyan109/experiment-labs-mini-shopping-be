@@ -9,9 +9,6 @@ const addToCart = async (req, res) => {
 
 
     try {
-        console.log("userId:", userId);
-        console.log("productId:", productId);
-
         const cart = await Cart.findOne({ userId });
         const product = await Product.findOne({ _id: productId })
         // const product = await Product.findById(productId)
@@ -97,4 +94,35 @@ const getCart = async (req, res) => {
     }
 }
 
-module.exports = { addToCart, getCart }
+const deleteCart = async (req, res) => {
+    const userId = req.userId
+    const { id } = req.params
+
+    try {
+        let cart = await Cart.findOne({ userId })
+        const productIndex = cart.products.findIndex(p => p.productId.toString() === id)
+        console.log(id);
+
+        if (productIndex > -1) {
+            let productItem = cart.products[productIndex]
+            cart.total -= productItem.quantity * productItem.price
+            if (cart.total < 0) {
+                cart.total = 0
+            }
+            cart.products.splice(productIndex, 1)
+            cart.total = cart.products.reduce((acc, curr) => {
+                return acc + curr.quantity * curr.price
+            }, 0)
+
+            cart = await cart.save()
+            res.status(200).send(cart);
+        }
+        else {
+            res.status(404).send("item not found");
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
+module.exports = { addToCart, getCart, deleteCart }

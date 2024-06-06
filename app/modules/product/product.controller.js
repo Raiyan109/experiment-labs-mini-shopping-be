@@ -4,7 +4,12 @@ const mongoose = require('mongoose')
 // Get all parts
 const getProducts = async (req, res) => {
     try {
-        const products = await Products.find()
+        const search = req.query.searchTerm
+        const query = {
+            name: { $regex: search, $options: 'i' }
+        }
+
+        const products = await Products.find(query)
 
         if (!products) {
             return res.status(404).json('No such products')

@@ -30,7 +30,6 @@ const signupUser = async (req, res) => {
 // login user
 const loginUser = async (req, res) => {
     const { email, password } = req.body
-    console.log(email, password);
 
     try {
         // let existingUser;

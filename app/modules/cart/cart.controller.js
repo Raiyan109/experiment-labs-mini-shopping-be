@@ -1,44 +1,98 @@
 const Cart = require('./cart.model')
 const User = require('../user/user.model')
+const Product = require('../product/product.model')
 
 // Add to cart
 const addToCart = async (req, res) => {
-    const { productId, quantity, name, price } = req.body;
     const userId = req.userId
-    if (!productId || !quantity || !name || !price) {
-        return res.status(400).json({ message: "All product details are required" });
-    }
+    const { productId, quantity } = req.body;
+
 
     try {
-        let existingCart = await Cart.findOne({ userId })
 
-        if (existingCart) {
-            //cart exists for user
-            let itemIndex = existingCart.products.findIndex(p => p.productId == productId);
+        // const product = await Product.findOne({ _id: productId })
+        const product = await Product.findById(productId)
 
-            if (itemIndex > -1) {
-                //product exists in the cart, update the quantity
-                let productItem = existingCart.products[itemIndex];
-                productItem.quantity += quantity; // Increment quantity
-                existingCart.products[itemIndex] = productItem;
-            } else {
-                //product does not exists in cart, add new item
-                existingCart.products.push({ productId, quantity, name, price });
+        if (!product) {
+            res.status(404).send({ message: "item not found" });
+            return;
+        }
+
+        const cart = await Cart.findOne({ userId });
+
+
+        // If cart already exists for user
+        if (cart) {
+            const productIndex = cart.products.findIndex(p => p.productId.toString() === productId)
+
+            // Check if product exists or not
+            if (productIndex > -1) {
+                let productItem = cart.products[productIndex]
+                productItem.quantity += quantity
+                cart.total = cart.products.reduce((acc, curr) => {
+                    return acc + curr.quantity * curr.price
+                }, 0)
+                cart.products[productIndex] = productItem
+                await cart.save()
+                res.status(200).send(cart);
             }
-            existingCart = await existingCart.save();
-            return res.status(201).send(existingCart);
-        } else {
-            //no cart for user, create new cart
-            const newCart = await Cart.create({
+            else {
+                // cart.products.push({ productId, name, quantity, price })
+                cart.products.push({
+                    productId: product._id,
+                    name: product.name,
+                    quantity: quantity,
+                    price: product.price
+
+                })
+                cart.total = cart.products.reduce((acc, curr) => {
+                    return acc + curr.quantity * curr.price
+                }, 0)
+                await cart.save();
+                res.status(200).send(cart);
+            }
+        }
+        else {
+
+            // No cart exists, create new one
+            // const newCart = await Cart.create({
+            //     userId,
+            //     products: [{ _id: productId, name, quantity, price }],
+            //     total: quantity * price
+            // })
+            const newCart = new Cart({
                 userId,
-                products: [{ productId, quantity, name, price }]
+                products: [{
+                    productId: product._id,
+                    name: product.name,
+                    quantity: quantity,
+                    price: product.price
+                }],
+                total: product.price * quantity
             });
+            await newCart.save();
             return res.status(201).send(newCart);
         }
     } catch (error) {
-        console.log(err);
+        console.log(error);
         res.status(500).send("Something went wrong");
     }
 }
 
-module.exports = { addToCart }
+//GET cart
+const getCart = async (req, res) => {
+    const userId = req.userId
+
+    try {
+        const cart = await Cart.findOne({ userId })
+        if (cart && cart.products.length > 0) {
+            res.status(200).send(cart);
+        } else {
+            res.send(null);
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
+module.exports = { addToCart, getCart }

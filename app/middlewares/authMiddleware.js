@@ -17,7 +17,6 @@ const requireSignIn = async (req, res, next) => {
         // req.existingUser = decode
         const { userId } = decoded
         req.userId = userId
-        console.log(req.userId);
         next();
     } catch (error) {
         return res.status(400).json({ msg: error.message })

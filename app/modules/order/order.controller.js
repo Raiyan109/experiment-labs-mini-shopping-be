@@ -1,5 +1,5 @@
-const Order = require('./order.model');
-const Cart = require('./cart.model');
+const Order = require('../order/order.model');
+const Cart = require('../cart/cart.model');
 const config = require('../../config');
 const stripe = require('stripe')(config.stripe_secret_key);
 
@@ -52,4 +52,9 @@ const getOrder = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, getOrder };
+const getConfig = async (req, res) => {
+
+    res.status(200).json({ publishableKey: config.stripe_publishable_key });
+}
+
+module.exports = { createOrder, getOrder, getConfig };

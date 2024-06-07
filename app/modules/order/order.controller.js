@@ -18,7 +18,7 @@ const createOrder = async (req, res) => {
     })
     console.log(paymentIntent);
     return res.status(201).json({
-        data: paymentIntent.id
+        data: paymentIntent.client_secret
     })
     // return paymentIntent.client_secret
     try {

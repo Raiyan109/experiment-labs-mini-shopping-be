@@ -1,39 +1,93 @@
 const Order = require('../order/order.model');
+const Product = require('../product/product.model');
 const Cart = require('../cart/cart.model');
 const config = require('../../config');
 const stripe = require('stripe')(config.stripe_secret_key);
 
 const createOrder = async (req, res) => {
     const userId = req.userId;
-    const { paymentMethodId } = req.body;
-
+    const { amount } = req.body;
+    const returnUrl = `${req.headers.origin}/success`;
+    console.log(amount);
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount | 0,
+        currency: 'usd',
+        automatic_payment_methods: {
+            enabled: true,
+        },
+    })
+    console.log(paymentIntent);
+    return res.status(201).json({
+        data: paymentIntent.id
+    })
+    // return paymentIntent.client_secret
     try {
         // Retrieve user's cart
-        const cart = await Cart.findOne({ userId });
-        if (!cart || cart.products.length === 0) {
-            return res.status(400).json({ message: "Cart is empty" });
+        // const cart = await Cart.findOne({ userId });
+        // if (!cart || cart.products.length === 0) {
+        //     return res.status(400).json({ message: "Cart is empty" });
+        // }
+
+        const stripePay = async (amount) => {
+            console.log(amount);
+
         }
 
+        // let paymentMethod = await stripe.paymentMethods.create({
+        //     type: 'card',
+        //     card: {
+        //         number: '4242424242424242',
+        //         exp_month: 9,
+        //         exp_year: 2022,
+        //         cvc: '314'
+        //     }
+        // })
+
         // Create a payment intent with Stripe
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(cart.total * 100), // Amount in cents
-            currency: 'usd',
-            payment_method: paymentMethodId,
-            confirm: true
-        });
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //     amount: Math.round(cart.total * 100), // Amount in cents
+        //     currency: 'usd',
+        //     payment_method: paymentMethodId,
+        //     confirm: true,
+        //     return_url: returnUrl,
+        // });
+
+        // const session = await stripe.checkout.sessions.create({
+
+        //     line_items: [
+        //         {
+        //             price: '3232',
+        //             quantity: 1,
+        //         }
+        //     ],
+        //     mode: 'payment',
+        //     success_url: returnUrl,
+        //     cancel_url: 'http://localhost:5173/',
+        //     customer_email: 'demo@gmail.com',
+        // });
 
         // Create a new order
-        const newOrder = await Order.create({
-            userId,
-            products: cart.products,
-            total: cart.total,
-            paymentIntentId: paymentIntent.id
-        });
+        // const newOrder = await Order.create({
+        //     userId,
+        //     products: cart.products,
+        //     total: cart.total,
+        //     paymentIntentId: paymentIntent.id
+        // });
 
         // Clear the cart
-        await Cart.findByIdAndDelete(cart._id);
+        // await Cart.findByIdAndDelete(cart._id);
 
-        res.status(201).json(newOrder);
+        // res.status(201).json({
+        //     order: newOrder,
+        //     clientSecret: paymentIntent.client_secret,
+        //     paymentIntent: paymentIntent,
+        //     url: session.url
+        // });
+        res.status(201).json({
+            success: true,
+            data: stripePay
+        })
+        return stripePay
     } catch (error) {
         console.error("Error creating order", error);
         res.status(500).json({ message: "Something went wrong" });

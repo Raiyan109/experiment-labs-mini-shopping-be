@@ -12,28 +12,28 @@ const orderSchema = new Schema({
             productId: {
                 type: Schema.Types.ObjectId,
                 ref: 'Product',
-                required: true
+                // required: true
             },
             name: {
                 type: String,
-                required: true
+                // required: true
             },
             quantity: {
                 type: Number,
-                required: true,
+                // required: true,
                 min: 1,
                 default: 1
             },
             price: {
                 type: Number,
-                required: true,
+                // required: true,
                 min: 0
             }
         }
     ],
     total: {
         type: Number,
-        required: true
+        // required: true
     },
     status: {
         type: String,
@@ -42,7 +42,7 @@ const orderSchema = new Schema({
     },
     paymentIntentId: {
         type: String,
-        required: true
+        // required: true
     }
 }, { timestamps: true });
 

@@ -4,7 +4,7 @@ const { createOrder, getOrder, getConfig } = require('./order.controller.js');
 
 const router = express.Router();
 
-router.post('/createOrder', requireSignIn, createOrder);
+router.post('/createOrder', createOrder);
 router.get('/', requireSignIn, getOrder);
 router.get('/config', getConfig);
 

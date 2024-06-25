@@ -87,7 +87,9 @@ const getCart = async (req, res) => {
         if (cart && cart.products.length > 0) {
             res.status(200).send(cart);
         } else {
-            res.send(null);
+            res.status(404).json({
+                message: 'No cart item found'
+            })
         }
     } catch (error) {
         res.status(500).send(error.message);
@@ -125,4 +127,42 @@ const deleteCart = async (req, res) => {
     }
 }
 
-module.exports = { addToCart, getCart, deleteCart }
+// Update the Quantity of item in cart (Increase / Decrease)
+const updateCartItemQuantity = async (req, res) => {
+    const userId = req.userId;
+    // const { productId, quantity } = req.body;
+    const { quantity } = req.body;
+    const { id } = req.params
+
+
+    try {
+        const cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            return res.status(404).send({ message: "Cart not found" });
+        }
+
+        const productIndex = cart.products.findIndex(p => p.productId.toString() === id);
+
+        if (productIndex === -1) {
+            return res.status(404).send({ message: "Product not found in cart" });
+        }
+
+        cart.products[productIndex].quantity = quantity;
+        cart.total = cart.products.reduce((acc, curr) => acc + curr.quantity * curr.price, 0);
+
+        await cart.save();
+
+        return res.status(200).send(cart);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Something went wrong");
+    }
+};
+
+module.exports = {
+    addToCart,
+    getCart,
+    deleteCart,
+    updateCartItemQuantity,
+};

@@ -18,7 +18,8 @@ const createStripe = async (req, res) => {
     })
     console.log(paymentIntent);
     return res.status(201).json({
-        data: paymentIntent.client_secret
+        paymentIntentId: paymentIntent.client_secret,
+        paymentData: paymentIntent
     })
 
 

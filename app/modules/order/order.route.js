@@ -1,10 +1,10 @@
 const express = require('express');
 const { requireSignIn } = require('../../middlewares/authMiddleware.js');
-const { createOrder, getOrder, getConfig } = require('./order.controller.js');
+const { createStripe, getOrder, getConfig } = require('./order.controller.js');
 
 const router = express.Router();
 
-router.post('/createOrder', createOrder);
+router.post('/createStripe', createStripe);
 router.get('/', requireSignIn, getOrder);
 router.get('/config', getConfig);
 
